@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">NOW_newsapp</string>
+    <string name="title_description">What is happening?</string>
+
+    <!-- Category Names -->
+    <string name="technology_category">Technology</string>
+    <string name="education_category">Education</string>
+    <string name="sports_category">Sport</string>
+    <string name="politics_category">Politics</string>
+
+    <!-- Button label names -->
+    <string name="start_btn">START</string>
+
+    <!-- Log messages -->
+    <string name="no_internet">No internet connection! Please check your internet connection and try it again!</string>
+    <string name="no_article">No news article is avaiable. Please try it later.</string>
+
+    <!-- category ids -->
+    <string name="technology_id">technology</string>
+    <string name="education_id">education</string>
+    <string name="sports_id">sport</string>
+    <string name="politics_id">politics</string>
+
+
+</resources>
