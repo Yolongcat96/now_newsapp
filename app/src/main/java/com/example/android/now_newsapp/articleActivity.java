@@ -50,7 +50,6 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         articleListView.setEmptyView(mEmptyStateTextView);
         // Create a new {@link ArrayAdapter} of articles
-        //itemAdapter adapter = new itemAdapter(this, articles);
         mAdapter = new articleAdapter(this, new ArrayList<article>());
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
@@ -86,8 +85,7 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
 
     }
 
-
-    // When clicking the backarrow button, it moves the user to the previous (main List) activity.
+    // When clicking the back arrow button, it moves the user to the previous (main List) activity.
     public void setBackArrowFunction() {
         final ImageView backArrowIV = (ImageView) findViewById(R.id.backArrow);
         backArrowIV.setOnClickListener(new View.OnClickListener() {

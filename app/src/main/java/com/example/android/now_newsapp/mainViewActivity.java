@@ -79,7 +79,7 @@ public class mainViewActivity extends AppCompatActivity {
             currRL.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View arg0, MotionEvent arg1) {
-                    Log.d(LOG_TAG,"Category Tag: " + currRL.getTag());
+
                     Intent articleViewIntent = new Intent(getApplicationContext(), articleActivity.class);
                     articleViewIntent.putExtra("categoryID", getCategoryNameWithIndex((Integer) currRL.getTag()));
                     startActivity(articleViewIntent);
