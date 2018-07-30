@@ -14,9 +14,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class articleAdapter extends ArrayAdapter<article> {
+public class ArticleAdapter extends ArrayAdapter<Article> {
 
-    public articleAdapter(Activity context, ArrayList<article> articles) {
+    public ArticleAdapter(Activity context, ArrayList<Article> articles) {
         super(context, 0, articles);
     }
 
@@ -31,7 +31,7 @@ public class articleAdapter extends ArrayAdapter<article> {
         }
 
         // Get the {@link article} object located at this position in the list
-        article currentArticle = getItem(position);
+        Article currentArticle = getItem(position);
 
         // Find the ImageView in the article_list.xml layout with the ID version_name
         ImageView thumbnailView = (ImageView) listItemView.findViewById(R.id.article_thumbnail);

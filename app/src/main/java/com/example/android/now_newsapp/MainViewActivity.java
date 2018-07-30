@@ -5,14 +5,18 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
-public class mainViewActivity extends AppCompatActivity {
+public class MainViewActivity extends AppCompatActivity {
 
-    public static final String LOG_TAG = mainViewActivity.class.getName();
+    public static final String LOG_TAG = MainViewActivity.class.getName();
 
     final int numberOfCategory = 4;
     static final int[] categoryLayoutID;
@@ -27,22 +31,40 @@ public class mainViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // set the title
+        setTitle();
         setContentView(R.layout.activity_main_view);
-        // set go back image
-        setBackArrowFunction();
         // Set touch event to all category boxex
         setTouchCategoryBoxes();
     }
 
-    // When clicking the backarrow button, it moves the user to the previous (main List) activity.
-    public void setBackArrowFunction() {
-        final ImageView backArrowIV = (ImageView) findViewById(R.id.backArrow);
-        backArrowIV.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent startViewIntent = new Intent(getApplicationContext(), startActivity.class);
-                startActivity(startViewIntent);
-            }
-        });
+    private void setTitle() {
+        getSupportActionBar().setTitle(getResources().getString(R.string.category_title));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    // Related to icons on the toolbar: menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        } else if (id == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    // This method initialize the contents of the Activity's options menu.
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the Options Menu we specified in XML
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     private String getCategoryNameWithIndex(int index) {
@@ -70,24 +92,24 @@ public class mainViewActivity extends AppCompatActivity {
         return chosenCategoryID;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     public void setTouchCategoryBoxes() {
 
         for (int index=0; index < numberOfCategory ; index++) {
+
             final RelativeLayout currRL = (RelativeLayout) findViewById(categoryLayoutID[index]);
             currRL.setTag(index);
-            currRL.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View arg0, MotionEvent arg1) {
 
-                    Intent articleViewIntent = new Intent(getApplicationContext(), articleActivity.class);
+            currRL.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent articleViewIntent = new Intent(getApplicationContext(), ArticleActivity.class);
                     articleViewIntent.putExtra("categoryID", getCategoryNameWithIndex((Integer) currRL.getTag()));
                     startActivity(articleViewIntent);
-
-                    return true;//always return true to consume event
                 }
             });
+
         }
 
     }
+
 }

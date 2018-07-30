@@ -14,10 +14,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 // Helper methods related to requesting and receiving news dta from theguardian site
 public class QueryUtils {
@@ -68,7 +73,7 @@ public class QueryUtils {
 
             // If the request wasd successful, get the code (response code is 200)
             // then read the input stream and parse the response.
-            if (urlConnection.getResponseCode() == 200) { // Success
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) { // Success
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
@@ -105,7 +110,7 @@ public class QueryUtils {
         return output.toString();
     }
 
-    public static List<article> fetchArticleData (String requestUrl) {
+    public static List<Article> fetchArticleData (String requestUrl) {
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -119,20 +124,20 @@ public class QueryUtils {
         }
 
         // Extract relevant fields from the JSON response and create a list of {@link Articles}s
-        List<article> articles = extractFeatureFromJson(jsonResponse);
+        List<Article> articles = extractFeatureFromJson(jsonResponse);
 
         // Return the list of {@link article}s
         return articles;
     }
 
-    public static List<article> extractFeatureFromJson(String articleJSON) {
+    public static List<Article> extractFeatureFromJson(String articleJSON) {
 
         if (TextUtils.isEmpty(articleJSON)) {
             return null;
         }
 
         // Create an empty ArrayList that we can start adding earthquakes to
-        List<article> articles = new ArrayList<>();
+        List<Article> articles = new ArrayList<>();
 
         try {
 
@@ -159,7 +164,8 @@ public class QueryUtils {
                 String webUrl = currentArticle.getString("webUrl");
 
                 // Article publication date
-                String publicationDate = currentArticle.getString("webPublicationDate");
+                String _publicationDate = currentArticle.getString("webPublicationDate");
+                String publicationDate = reformatDate(_publicationDate);
 
                 // Get data from the fields
                 JSONObject fields = currentArticle.getJSONObject("fields");
@@ -180,7 +186,7 @@ public class QueryUtils {
 
                 String name = "Written by "+ author_firstName + " " + author_lastName;
 
-                article _article = new article(articleId, sectionId, sectionName, title, webUrl, imageUrl, publicationDate, name);
+                Article _article = new Article(articleId, sectionId, sectionName, title, webUrl, imageUrl, publicationDate, name);
                 articles.add(_article);
 
             }
@@ -190,6 +196,21 @@ public class QueryUtils {
         }
 
         return articles;
+    }
+
+    // Format the received data format
+    private static String reformatDate(String stringDate) {
+
+        Date date1 = new Date();
+        try {
+            date1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(stringDate);
+        } catch (ParseException e) {
+            Log.e(LOG_TAG,"Formatted date error" + e);
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd LLL yyyy");
+
+        return dateFormat.format(date1).toString();
     }
 
 }

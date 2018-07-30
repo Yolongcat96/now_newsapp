@@ -1,7 +1,7 @@
 package com.example.android.now_newsapp;
 
 // One news article
-public class article {
+public class Article {
 
     private String aId;
     private String aSectionId;
@@ -12,7 +12,7 @@ public class article {
     private String aPublishDate;
     private String aAuthorName;
 
-    public article(String _aId, String _aSectionId, String _aSection, String _aTitle, String _aWebUrl, String _aImageUrl, String _aPublishDate, String _aAuthorName) {
+    public Article(String _aId, String _aSectionId, String _aSection, String _aTitle, String _aWebUrl, String _aImageUrl, String _aPublishDate, String _aAuthorName) {
         this.aId          = _aId;
         this.aSectionId   = _aSectionId;
         this.aSection     = _aSection;

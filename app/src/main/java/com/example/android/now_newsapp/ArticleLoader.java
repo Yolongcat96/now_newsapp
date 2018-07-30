@@ -5,15 +5,15 @@ import android.content.Context;
 import java.util.List;
 import android.content.AsyncTaskLoader;
 
-public class articleLoader extends AsyncTaskLoader<List<article>> {
+public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
     // Tag for log messages
-    private static final String LOG_TAG = articleLoader.class.getName();
+    private static final String LOG_TAG = ArticleLoader.class.getName();
 
     // Query URL
     private String mUrl;
 
-    public articleLoader(Context context, String url) {
+    public ArticleLoader(Context context, String url) {
         super(context);
         mUrl = url;
     }
@@ -25,13 +25,13 @@ public class articleLoader extends AsyncTaskLoader<List<article>> {
 
     // This is a background thread
     @Override
-    public List<article> loadInBackground() {
+    public List<Article> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
 
         // Perform the network request, parse the response, and extract a list of articles.
-        List<article> articles = QueryUtils.fetchArticleData(mUrl);
+        List<Article> articles = QueryUtils.fetchArticleData(mUrl);
 
         return articles;
     }

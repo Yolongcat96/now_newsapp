@@ -6,12 +6,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class startActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
+        // hide app bar
+        getSupportActionBar().hide();
 
         // Set the click event on the START button
         setClickEventOnStartButton();
@@ -25,7 +28,7 @@ public class startActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //call main view activity
-                Intent mainViewIntent = new Intent(getApplicationContext(), mainViewActivity.class);
+                Intent mainViewIntent = new Intent(getApplicationContext(), MainViewActivity.class);
                 startActivity(mainViewIntent);
             }
         });

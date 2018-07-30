@@ -4,12 +4,16 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -18,18 +22,19 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.support.v7.widget.Toolbar;
 
-public class articleActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<article>> {
+public class ArticleActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
 
     private static final String api_key = "4ab38b9a-63a4-42a3-86c4-b34de70d93f6";
     private static final int ARTICLE_LOADER_ID = 0;
-    public static final String LOG_TAG = articleActivity.class.getName();
+    public static final String LOG_TAG = ArticleActivity.class.getName();
 
     private TextView mEmptyStateTextView;
     private String currCategoryID = "";
 
     // Adapter for the list of articles
-    private articleAdapter mAdapter;
+    private ArticleAdapter mAdapter;
 
     private static final String URL_REQUEST = "https://content.guardianapis.com/search?";
     private static final String AND_OPERATOR = "%20AND%20";
@@ -40,17 +45,14 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_article);
         // get the chosen category value from the previous activity
         currCategoryID = getIntent().getStringExtra("categoryID");
-        // set category title view
-        TextView categoryTitleView = (TextView)findViewById(R.id.categoryTextView);
-        categoryTitleView.setText(currCategoryID);
-        // set goback funtion
-        setBackArrowFunction();
+        // set the title
+        setTitle();
         // Find a reference to the {@link ListView} in the layout
         ListView articleListView = (ListView) findViewById(R.id.list);
         mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
         articleListView.setEmptyView(mEmptyStateTextView);
         // Create a new {@link ArrayAdapter} of articles
-        mAdapter = new articleAdapter(this, new ArrayList<article>());
+        mAdapter = new ArticleAdapter(this, new ArrayList<Article>());
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         articleListView.setAdapter(mAdapter);
@@ -59,7 +61,7 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // Find the current earthquake that was clicked on
-                article currentArticle = mAdapter.getItem(position);
+                Article currentArticle = mAdapter.getItem(position);
                 // Convert the String URL into a URI object (to pass into the Intent constructor)
                 Uri earthquakeUri = Uri.parse(currentArticle.getaWebUrl());
                 // Create a new intent to view the earthquake URI
@@ -85,25 +87,41 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
 
     }
 
-    // When clicking the back arrow button, it moves the user to the previous (main List) activity.
-    public void setBackArrowFunction() {
-        final ImageView backArrowIV = (ImageView) findViewById(R.id.backArrow);
-        backArrowIV.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent mainViewIntent = new Intent(getApplicationContext(), mainViewActivity.class);
-                startActivity(mainViewIntent);
-            }
-        });
+    // Set the title based on the current category
+    private void setTitle() {
+        getSupportActionBar().setTitle(currCategoryID.toUpperCase());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
-    public Loader<List<article>> onCreateLoader(int i, Bundle bundle) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    // onCreateLoader instantiates and returns a new Loader for the given ID
+    public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // getString retrieves a String value from the preferences. The second parameter is the default value for this prefrenece.
+        String numOfDisaplayedNews = sharedPrefs.getString(
+                getString(R.string.settings_min_num_displayed_key),
+                getString(R.string.settings_min_num_displayed_default));
+
+        String orderByValue = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default));
 
         // include all categories
         StringBuilder themes = new StringBuilder();
         themes.append(getString(R.string.technology_id) + AND_OPERATOR);
         themes.append(getString(R.string.education_id)  + AND_OPERATOR);
-        themes.append(getString(R.string.sports_id)     + AND_OPERATOR);
+        themes.append(getString(R.string.sports_id)      + AND_OPERATOR);
         themes.append(getString(R.string.politics_id)   + AND_OPERATOR);
 
         if (themes.toString().endsWith(AND_OPERATOR)) {
@@ -111,23 +129,25 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
             Log.d(LOG_TAG, themes.toString());
         }
 
+        // parse breaks apart the URI string that's passed into its parameter
         Uri baseUri = Uri.parse(URL_REQUEST);
         Uri.Builder uriBuilder = baseUri.buildUpon();
+
         uriBuilder.appendQueryParameter("q", themes.toString());
         uriBuilder.appendQueryParameter("section", currCategoryID);
         uriBuilder.appendQueryParameter("show-fields", "thumbnail");
         uriBuilder.appendQueryParameter("show-tags", "contributor");
-        uriBuilder.appendQueryParameter("page-size", "10");
-        uriBuilder.appendQueryParameter("order-by", "relevance");
+        uriBuilder.appendQueryParameter("page-size", numOfDisaplayedNews);
+        uriBuilder.appendQueryParameter("order-by", orderByValue); // relevance
         uriBuilder.appendQueryParameter("api-key", api_key);
         Log.d(LOG_TAG, uriBuilder.toString());
 
         // Create a new loader for the given URL
-        return new articleLoader(articleActivity.this, uriBuilder.toString());
+        return new ArticleLoader(ArticleActivity.this, uriBuilder.toString());
     }
 
     @Override
-    public void onLoadFinished(Loader<List<article>> loader, List<article> articles) {
+    public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
         // Hide loading indicator because the data has been loaded.
         View loadingIndicator = findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
@@ -143,7 +163,7 @@ public class articleActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
-    public void onLoaderReset(Loader<List<article>> loader) {
+    public void onLoaderReset(Loader<List<Article>> loader) {
         // Loader reset, so we can clear out our existing data.
         mAdapter.clear();
     }

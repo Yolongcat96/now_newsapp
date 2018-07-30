@@ -16,10 +16,35 @@
     <string name="no_article">No news article is avaiable. Please try it later.</string>
 
     <!-- category ids -->
+    <string name="category_title">CATEGORY</string>
     <string name="technology_id">technology</string>
     <string name="education_id">education</string>
     <string name="sports_id">sport</string>
     <string name="politics_id">politics</string>
+
+    <!-- Setting part -->
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_title">NOW News Settings</string>
+
+    <!-- Setting option: for order-by preference -->
+    <string name="settings_order_by_label">Order By</string>
+    <string name="settings_order_by_key" translatable="false">order_by</string>
+    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_relevance_value</string>
+
+    <string name="settings_order_by_most_recent_label">Most Recent</string>
+    <string name="settings_order_by_most_recent_value" translatable="false">newest</string>
+
+    <string name="settings_order_by_oldest_label">Oldest</string>
+    <string name="settings_order_by_oldest_value" translatable="false">oldest</string>
+
+    <string name="settings_order_by_relevance_label">Relevance</string>
+    <string name="settings_order_by_relevance_value" translatable="false">relevance</string>
+
+    <!-- Setting option: number of displayed news -->
+    <string name="settings_min_num_displayed_label">Minimum number of displayed news</string>
+    <string name="settings_min_num_displayed_key" translatable="false">min_num_displayed</string>
+    <string name="settings_min_num_displayed_default" translatable="false">10</string>
+
 
 
 </resources>
