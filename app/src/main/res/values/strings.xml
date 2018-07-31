@@ -8,6 +8,10 @@
     <string name="sports_category">Sport</string>
     <string name="politics_category">Politics</string>
 
+    <!-- Json parsing related -->
+    <string name="unknown">Unknown</string>
+    <string name="prefix_author_name">Written by </string>
+
     <!-- Button label names -->
     <string name="start_btn">START</string>
 
@@ -45,6 +49,11 @@
     <string name="settings_min_num_displayed_key" translatable="false">min_num_displayed</string>
     <string name="settings_min_num_displayed_default" translatable="false">10</string>
 
-
-
+    <!-- Log messages -->
+    <string name="url_problem">Problem on building the URL: </string>
+    <string name="error_response">Error response code: </string>
+    <string name="JSON_retrieving_problem">Problem retrieving the earthquake JSON results.</string>
+    <string name="http_problem">Problem making the HTTP request.</string>
+    <string name="article_parsing_problem">Problem happened parsing the article results.</string>
+    <string name="formatted_date_error">Formatted date error</string>
 </resources>

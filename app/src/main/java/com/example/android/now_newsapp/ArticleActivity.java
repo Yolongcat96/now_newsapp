@@ -9,24 +9,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import android.support.v7.widget.Toolbar;
 
 public class ArticleActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
 
-    private static final String api_key = "4ab38b9a-63a4-42a3-86c4-b34de70d93f6";
+    private static final String API_KEY = BuildConfig.API_KEY;
     private static final int ARTICLE_LOADER_ID = 0;
     public static final String LOG_TAG = ArticleActivity.class.getName();
 
@@ -139,7 +136,7 @@ public class ArticleActivity extends AppCompatActivity implements LoaderManager.
         uriBuilder.appendQueryParameter("show-tags", "contributor");
         uriBuilder.appendQueryParameter("page-size", numOfDisaplayedNews);
         uriBuilder.appendQueryParameter("order-by", orderByValue); // relevance
-        uriBuilder.appendQueryParameter("api-key", api_key);
+        uriBuilder.appendQueryParameter("api-key", API_KEY);
         Log.d(LOG_TAG, uriBuilder.toString());
 
         // Create a new loader for the given URL

@@ -8,9 +8,12 @@ import android.widget.Button;
 
 public class StartActivity extends AppCompatActivity {
 
+    static StartActivity sAct;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sAct = this;
         setContentView(R.layout.activity_start);
 
         // hide app bar

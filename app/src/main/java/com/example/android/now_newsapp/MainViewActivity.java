@@ -1,18 +1,12 @@
 package com.example.android.now_newsapp;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
 public class MainViewActivity extends AppCompatActivity {
 

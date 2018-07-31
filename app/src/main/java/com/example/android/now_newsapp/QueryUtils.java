@@ -1,11 +1,11 @@
 package com.example.android.now_newsapp;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 // Helper methods related to requesting and receiving news dta from theguardian site
 public class QueryUtils {
@@ -40,48 +36,43 @@ public class QueryUtils {
     }
 
     // Create URL
-    private static URL createUrl (String stringUrl) {
+    private static URL createUrl(String stringUrl) {
         URL url = null;
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Problem on building the URL:", e);
+            Log.e(LOG_TAG, StartActivity.sAct.getApplicationContext().getResources().getString(R.string.url_problem), e);
         }
         return url;
     }
 
     // create Http request signal
     private static String makeHttpRequest(URL url) throws IOException {
-
         String jsonResponse = ""; // Initialization
-
         // If the url is null, then return early
         if (url == null) {
             return jsonResponse;
         }
-
         // Create the request signal
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
-
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(READ_TIMEOUT/*miliseconds*/);
             urlConnection.setConnectTimeout(CONNECT_TIMEOUT);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
-
             // If the request wasd successful, get the code (response code is 200)
             // then read the input stream and parse the response.
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) { // Success
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
-                Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
+                Log.e(LOG_TAG, StartActivity.sAct.getApplicationContext().getResources().getString(R.string.error_response) + urlConnection.getResponseCode());
             }
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, StartActivity.sAct.getApplicationContext().getResources().getString(R.string.JSON_retrieving_problem) , e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -90,13 +81,11 @@ public class QueryUtils {
                 inputStream.close();
             }
         }
-
         return jsonResponse;
 
     }
 
     private static String readFromStream(InputStream inputStream) throws IOException {
-
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
@@ -110,91 +99,73 @@ public class QueryUtils {
         return output.toString();
     }
 
-    public static List<Article> fetchArticleData (String requestUrl) {
-
+    public static List<Article> fetchArticleData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
-
         // Perform HTTP request to the URL and receive a JSON response back
         String jsonResponse = null;
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+            Log.e(LOG_TAG, StartActivity.sAct.getApplicationContext().getResources().getString(R.string.http_problem), e);
         }
-
         // Extract relevant fields from the JSON response and create a list of {@link Articles}s
         List<Article> articles = extractFeatureFromJson(jsonResponse);
-
         // Return the list of {@link article}s
         return articles;
     }
 
     public static List<Article> extractFeatureFromJson(String articleJSON) {
-
         if (TextUtils.isEmpty(articleJSON)) {
             return null;
         }
-
         // Create an empty ArrayList that we can start adding earthquakes to
         List<Article> articles = new ArrayList<>();
-
         try {
-
             JSONObject root = new JSONObject(articleJSON);
             JSONObject contents = root.getJSONObject("response");
             JSONArray articleArray = contents.getJSONArray("results");
-            for (int i = 0 ; i < articleArray.length() ; i++) {
-
+            for (int i = 0; i < articleArray.length(); i++) {
                 JSONObject currentArticle = articleArray.getJSONObject(i);
-
                 // Article Id
                 String articleId = currentArticle.getString("id");
-
                 // Article Section Id
                 String sectionId = currentArticle.getString("sectionId");
-
                 // Article Section
                 String sectionName = currentArticle.getString("sectionName");
-
                 // Article Title
                 String title = currentArticle.getString("webTitle");
-
                 // Article web url
                 String webUrl = currentArticle.getString("webUrl");
-
                 // Article publication date
                 String _publicationDate = currentArticle.getString("webPublicationDate");
                 String publicationDate = reformatDate(_publicationDate);
-
                 // Get data from the fields
-                JSONObject fields = currentArticle.getJSONObject("fields");
                 String imageUrl = null;
-                if (fields != null) {
-                    imageUrl = fields.getString("thumbnail");
+                if (currentArticle.has("fields")) {
+                    JSONObject fields = currentArticle.getJSONObject("fields");
+                    if (fields != null) {
+                        imageUrl = fields.getString("thumbnail");
+                    }
                 }
-
                 // Get data from the tags
                 JSONArray tags = currentArticle.getJSONArray("tags");
-                String author_firstName = "Unknown";
+                String author_firstName = StartActivity.sAct.getApplicationContext().getResources().getString(R.string.unknown);
                 String author_lastName = "";
                 if (tags.length() > 0) {
                     JSONObject author = tags.getJSONObject(0);
                     author_firstName = author.getString("firstName");
                     author_lastName = author.getString("lastName");
                 }
-
-                String name = "Written by "+ author_firstName + " " + author_lastName;
-
+                String name = StartActivity.sAct.getApplicationContext().getResources().getString(R.string.prefix_author_name) + " " + author_firstName + " " + author_lastName;
                 Article _article = new Article(articleId, sectionId, sectionName, title, webUrl, imageUrl, publicationDate, name);
                 articles.add(_article);
 
             }
 
         } catch (JSONException e) {
-            Log.e("QueryUtils", "Problem parsing the article results", e);
+            Log.e(LOG_TAG, StartActivity.sAct.getApplicationContext().getResources().getString(R.string.article_parsing_problem), e);
         }
-
         return articles;
     }
 
@@ -205,7 +176,7 @@ public class QueryUtils {
         try {
             date1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(stringDate);
         } catch (ParseException e) {
-            Log.e(LOG_TAG,"Formatted date error" + e);
+            Log.e(LOG_TAG,StartActivity.sAct.getApplicationContext().getResources().getString(R.string.formatted_date_error) + e);
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd LLL yyyy");
